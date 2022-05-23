@@ -1,3 +1,4 @@
+from urllib.parse import uses_relative
 import urllib3
 import signal
 import threading
@@ -5,12 +6,9 @@ import sys
 
 from PIL import Image
 
-from config import Config
-
-from button_handler import ButtonHandler
-
-from matrix import Matrix
-from view_handler import ViewHandler
+from led_matrix.matrix import Matrix
+from led_matrix.display_handler import DisplayHandler
+from web.app import app
 
 urllib3.disable_warnings()
 
@@ -19,33 +17,22 @@ class Main:
         signal.signal(signal.SIGINT, self.signal_handler)
         signal.signal(signal.SIGTERM, self.signal_handler)
 
-        Config.initialize_state()
-
-        self._sigint_stop_event = threading.Event()
-        self._press_event = threading.Event()
-        self._long_press_event = threading.Event()
-
-        self._button_thread = ButtonHandler(self._press_event, self._long_press_event, self._sigint_stop_event)
-        
-        if Config.VIRTUAL_MODE:
-            self._button_thread.daemon = True
-        self._button_thread.start()
-
+        # Create display handler.
         self._matrix = Matrix()
+        self._display_handler = DisplayHandler(self._matrix)
 
-        self._view_handler = ViewHandler(self._matrix, self._press_event, self._long_press_event)
-        self._view_handler.start()
+        # Start flask in its own thread.
+        self._flask_thread = threading.Thread(target=lambda: app.run(debug=True, use_reloader=False))
+        self._flask_thread.daemon = True
+        self._flask_thread.start()
+
+        self._display_handler.start()
 
     def signal_handler(self, sig, frame):
         print("Main - Sending stop event...")
-        self._sigint_stop_event.set()
 
-        self._view_handler.save_view()
+        self._display_handler.stop()
 
-        # Hack to clear screen on termination.
-        image = Image.new("RGB", self._matrix.dimensions, color="black")     
-        self._matrix.set_image(image)
-        
         print("Main - Stopped.")
         sys.exit(0)
 

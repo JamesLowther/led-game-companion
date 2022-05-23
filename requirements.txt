@@ -1,3 +1,4 @@
 Pillow
 urllib3
 python-dotenv
+Flask

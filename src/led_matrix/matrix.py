@@ -1,7 +1,7 @@
 try:
     from rgbmatrix import RGBMatrix, RGBMatrixOptions
 except ModuleNotFoundError:
-    from virtual_rgb_matrix import RGBMatrix, RGBMatrixOptions
+    from led_matrix.virtual_rgb_matrix import RGBMatrix, RGBMatrixOptions
 
 import argparse
 
