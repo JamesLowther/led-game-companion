@@ -2,3 +2,4 @@ Pillow
 urllib3
 python-dotenv
 Flask
+easing-functions
