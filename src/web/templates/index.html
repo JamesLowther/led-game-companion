@@ -11,11 +11,15 @@
   <script>
     $(document).ready(() => {
       $("#randomize").click(() => {
+        $("#randomize").attr("disabled", true);
         $.post(
           "/command",
           {
             game: "mario-kart",
             function: "randomize"
+          },
+          () => {
+            $("#randomize").attr("disabled", false);
           }
         )
       })

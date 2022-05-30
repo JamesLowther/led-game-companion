@@ -1,10 +1,10 @@
-from queue import Queue
+from queue import Queue, Empty
 from PIL import Image
 import uuid
 
 import led_matrix.mario_kart.functions
 
-function_mappings = {
+FUNCTION_MAPPINGS = {
     "mario-kart": {
         "randomize": led_matrix.mario_kart.functions.randomize
     }
@@ -24,7 +24,7 @@ class DisplayHandler:
             DisplayHandler._lock = True
 
             command = command_data["command"]
-            function = function_mappings[command["game"]][command["function"]]
+            function = FUNCTION_MAPPINGS[command["game"]][command["function"]]
 
             # Compute.
             response = function(self._matrix)
@@ -58,4 +58,8 @@ class DisplayHandler:
 
     @classmethod
     def wait_complete(cls):
-        return cls._finish_queue.get()
+        try:
+            return cls._finish_queue.get(timeout=30)
+        except Empty:
+            cls._finish_queue.empty()
+            return None

@@ -17,7 +17,7 @@ def command():
         if c_id:
             data = DisplayHandler.wait_complete()
 
-            if c_id != data["uuid"]:
+            if not data or c_id != data["uuid"]:
                 return "ERROR"
 
             return json.dumps(data["response"])
