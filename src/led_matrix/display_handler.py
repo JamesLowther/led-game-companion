@@ -2,13 +2,7 @@ from queue import Queue, Empty
 from PIL import Image
 import uuid
 
-import led_matrix.mario_kart.functions
-
-FUNCTION_MAPPINGS = {
-    "mario-kart": {
-        "randomize": led_matrix.mario_kart.functions.randomize
-    }
-}
+from led_matrix.mario_kart.functions import MarioKart
 
 class DisplayHandler:
     _command_queue = Queue()
@@ -18,16 +12,24 @@ class DisplayHandler:
     def __init__(self, matrix):
         self._matrix = matrix
 
+        mario_kart = MarioKart(self._matrix)
+
+        self._FUNCTION_MAPPINGS = {
+            "mario-kart": {
+                "randomize": mario_kart.randomize
+            }
+        }
+
     def start(self):
         while True:
             command_data = DisplayHandler._command_queue.get()
             DisplayHandler._lock = True
 
             command = command_data["command"]
-            function = FUNCTION_MAPPINGS[command["game"]][command["function"]]
+            function = self._FUNCTION_MAPPINGS[command["game"]][command["function"]]
 
             # Compute.
-            response = function(self._matrix)
+            response = function()
 
             response_data = {
                 "uuid": command_data["uuid"],
