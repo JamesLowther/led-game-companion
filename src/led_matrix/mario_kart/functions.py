@@ -1,10 +1,8 @@
 import random
-from time import sleep
 from PIL import Image, ImageChops
 from led_matrix.mario_kart.sources import CUPS
 from led_matrix.common import msleep
-from easing_functions import BackEaseOut
-import numpy as np
+from easing_functions import QuarticEaseIn
 
 class MarioKart:
     def __init__(self, matrix):
@@ -18,18 +16,15 @@ class MarioKart:
         self.transition(course_tape)
 
     def transition(self, course_tape):
-        # sleep_amount = 4
-        # SHIFT_AMOUNT = -2
 
-        width = course_tape.size[0]
+        width = course_tape.size[0] - self._matrix.dimensions[0]
 
-        sleep_easing = BackEaseOut(start=1, end=10, duration=width)
-        shift_easing = BackEaseOut(start=3, end=2, duration=width)
+        sleep_easing = QuarticEaseIn(start=1, end=50, duration=width)
 
         current_offset = 0
 
         while True:
-            shift_amount = int(shift_easing.ease(current_offset) * -1)
+            shift_amount = -2
 
             course_tape = ImageChops.offset(course_tape, shift_amount, 0)
             cropped = course_tape.crop(
@@ -42,17 +37,15 @@ class MarioKart:
             )
 
             current_offset += abs(shift_amount)
-            if current_offset > (width - self._matrix.dimensions[0]):
+            if current_offset > width:
                 break
 
             sleep_amount = sleep_easing.ease(current_offset)
-            print(f"sleep {sleep_amount}")
-            print(f"shift {shift_amount}\n")
 
             self._matrix.set_image(cropped)
             msleep(sleep_amount)
 
-    def generate_course_tape(self, length=10):
+    def generate_course_tape(self, length=15):
         cup, course = self.pick_course()
 
         pre_courses = []
