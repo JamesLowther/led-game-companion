@@ -22,7 +22,7 @@ class MarioKart:
 
         width = course_tape.size[0] - self._matrix.dimensions[0]
 
-        sleep_easing = QuarticEaseIn(start=5, end=50, duration=width)
+        sleep_easing = QuarticEaseIn(start=5, end=70, duration=width)
 
         current_offset = 0
 
