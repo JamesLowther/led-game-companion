@@ -14,6 +14,8 @@ class MarioKart:
         self._course_pool = set()
         self.generate_course_pool()
 
+        self._prev_course = None
+
     def randomize(self):
         course_tape = self.generate_course_tape()
         self.transition(course_tape)
@@ -53,8 +55,13 @@ class MarioKart:
 
         pre_courses = []
 
+        amount = length - 1
+
+        if not self._prev_course is None:
+            amount -= 1
+
         # Generate course
-        for _ in range(length-1):
+        for _ in range(amount):
             while True:
                 cup_1 = random.choice(list(CUPS.keys()))
                 course_1 = random.choice(list(CUPS[cup_1]["courses"].keys()))
@@ -63,11 +70,16 @@ class MarioKart:
                     pre_courses.append((cup_1, course_1))
                     break
 
+        if not self._prev_course is None:
+            pre_courses = [self._prev_course] + pre_courses
+
         image = Image.new("RGB", (self._matrix.dimensions[0] * length, self._matrix.dimensions[1]), color="black")
 
         for i, pre_course in enumerate(pre_courses):
             course_image = self.create_course_image(pre_course[0], pre_course[1])
             image.paste(course_image, (i * self._matrix.dimensions[0], 0))
+
+        self._prev_course = (cup, course)
 
         selected_course = self.create_course_image(cup, course)
 
