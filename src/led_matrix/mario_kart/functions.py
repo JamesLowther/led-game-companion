@@ -1,6 +1,5 @@
 import random
 import os
-from tkinter import Y
 
 from PIL import Image, ImageChops, ImageFont, ImageDraw
 from led_matrix.mario_kart.sources import CUPS
