@@ -22,7 +22,7 @@ class Main:
         self._display_handler = DisplayHandler(self._matrix)
 
         # Start flask in its own thread.
-        self._flask_thread = threading.Thread(target=lambda: app.run(debug=True, use_reloader=False))
+        self._flask_thread = threading.Thread(target=lambda: app.run(debug=True, use_reloader=False, host="0.0.0.0"))
         self._flask_thread.daemon = True
         self._flask_thread.start()
 
